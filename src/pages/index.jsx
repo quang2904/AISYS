@@ -1,7 +1,7 @@
-import { useEffect, useState, } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Stack, useMediaQuery, } from "@mui/material";
-import { TabContext, TabPanel } from '@mui/lab';
+import { Stack, useMediaQuery } from "@mui/material";
+import { TabContext, TabPanel } from "@mui/lab";
 
 import SideMenu from "src/components/SideMenu";
 import TopHeader from "src/components/TopHeader";
@@ -9,164 +9,161 @@ import NewTopic from "src/components/Tabs/new_topic";
 import MainTab from "src/components/Tabs/main_tab";
 
 export default function Page() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  let { search } = useLocation();
+  const query = new URLSearchParams(search);
 
-    let { search } = useLocation();
-    const query = new URLSearchParams(search);
+  const mdUp = useMediaQuery("(min-width:600px)");
 
-    const mdUp = useMediaQuery("(min-width:600px)");
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [page, setPage] = useState("new-topic");
+  const [chatList, setChatList] = useState([]);
+  const [currentTab, setCurrentTab] = useState("new-topic");
 
-    const [openDrawer, setOpenDrawer] = useState(false);
-    const [page, setPage] = useState('new-topic');
-    const [chatList, setChatList] = useState([]);
-    const [currentTab, setCurrentTab] = useState('new-topic');
+  const tabList = [
+    {
+      // label: t('products'),
+      value: "new-topic",
+      content: NewTopic,
+    },
+    // {
+    //     // label: t('orders'),
+    //     value: 'new-chat',
+    //     content: NewChat,
+    // },
+    {
+      // label: t('warehouse_document'),
+      value: "main-tab",
+      content: MainTab,
+    },
+  ];
 
-    const tabList = [
-        {
-            // label: t('products'),
-            value: 'new-topic',
-            content: NewTopic,
-        },
-        // {
-        //     // label: t('orders'),
-        //     value: 'new-chat',
-        //     content: NewChat,
-        // },
-        {
-            // label: t('warehouse_document'),
-            value: 'main-tab',
-            content: MainTab,
-        },
+  useEffect(() => {
+    getChatList();
+  }, []);
+
+  const getChatList = () => {
+    const list = [
+      {
+        label: "Common",
+        id: "common",
+        list: [
+          {
+            label: "Chat 1",
+            id: "1",
+          },
+          {
+            label: "Chat 2",
+            id: "2",
+          },
+          {
+            label: "Chat 3",
+            id: "3",
+          },
+        ],
+      },
+      {
+        label: "Topic 1",
+        id: "topic_1",
+        list: [
+          {
+            label: "Chat 10",
+            id: "5",
+          },
+          {
+            label: "Chat 2",
+            id: "10",
+          },
+          {
+            label: "Chat 3",
+            id: "120",
+          },
+        ],
+      },
+      {
+        label: "Topic 2",
+        id: "topic_2",
+        list: [
+          {
+            label: "Chat 1",
+            id: "100",
+          },
+          {
+            label: "Chat 2",
+            id: "12345",
+          },
+          {
+            label: "abcde",
+            id: "84564132",
+          },
+        ],
+      },
     ];
+    setChatList(list);
+  };
 
-    useEffect(() => {
-        getChatList();
-    }, [])
+  const getPageData = (topicId, chatId) => {};
 
-    const getChatList = () => {
-        const list = [
-            {
-                label: 'Common',
-                id: 'common',
-                list: [
-                    {
-                        label: 'Chat 1',
-                        id: '1',
-                    },
-                    {
-                        label: 'Chat 2',
-                        id: '2',
-                    },
-                    {
-                        label: 'Chat 3',
-                        id: '3',
-                    },
-                ],
-            },
-            {
-                label: 'Topic 1',
-                id: 'topic_1',
-                list: [
-                    {
-                        label: 'Chat 10',
-                        id: '5',
-                    },
-                    {
-                        label: 'Chat 2',
-                        id: '10',
-                    },
-                    {
-                        label: 'Chat 3',
-                        id: '120',
-                    },
-                ],
-            },
-            {
-                label: 'Topic 2',
-                id: 'topic_2',
-                list: [
-                    {
-                        label: 'Chat 1',
-                        id: '100',
-                    },
-                    {
-                        label: 'Chat 2',
-                        id: '12345',
-                    },
-                    {
-                        label: 'abcde',
-                        id: '84564132',
-                    },
-                ],
-            },
-        ]
-        setChatList(list);
-    }
+  useEffect(() => {
+    if (!query?.size) {
+      navigate(`?newTopic=${true}`);
+    } else {
+      const newTopic = query.get("newTopic");
+      const topic = query.get("topic");
+      const newChat = query.get("newChat");
+      const chat = query.get("chat");
+      if (newTopic && (newChat || topic || chat)) {
+        navigate(`?newTopic=${true}`);
+      } else {
+        setCurrentTab("new-topic");
+      }
 
-    const getPageData = (topicId, chatId) => {
+      if (topic && newChat) {
+        setCurrentTab("main-tab");
+      }
 
-    }
-
-    useEffect(() => {
-        if (!query?.size) {
-            navigate(`?newTopic=${true}`);
+      if (topic && chat) {
+        if (newChat) {
+          navigate(`?topic=${topic}&chat=${chat}`);
         } else {
-            const newTopic = query.get('newTopic');
-            const topic = query.get('topic');
-            const newChat = query.get('newChat');
-            const chat = query.get('chat');
-            if (newTopic && (newChat || topic || chat)) {
-                navigate(`?newTopic=${true}`);
-            } else {
-                setCurrentTab('new-topic');
-            }
-
-            if (topic && newChat) {
-                setCurrentTab('main-tab');
-            }
-
-            if (topic && chat) {
-                if (newChat) {
-                    navigate(`?topic=${topic}&chat=${chat}`);
-                } else {
-                    setCurrentTab('main-tab');
-                }
-            }
+          setCurrentTab("main-tab");
         }
-    }, [query, chatList])
-
-    const tabProps = {
-        topicId: query.get('topic'),
-        chatId: query.get('chat'),
-        newChat: query.get('newChat'),
+      }
     }
+  }, [query, chatList]);
 
-    return (
-        <Stack sx={{ height: '100%' }}>
-            1237136813798
-            <TopHeader openNav={() => setOpenDrawer(true)} />
+  const tabProps = {
+    topicId: query.get("topic"),
+    chatId: query.get("chat"),
+    newChat: query.get("newChat"),
+  };
 
-            <Stack direction={"row"} flex={1}>
-                <SideMenu
-                    query={query}
-                    chatList={chatList}
-                    openDrawer={openDrawer}
-                    setOpenDrawer={setOpenDrawer}
-                />
-                
-            <TabContext value={currentTab}>
-                <Stack gap={2} 
-                    sx={{ 
-                        background: '#FFFFFF', padding: '16px',
-                        position: 'relative',
-                        top: 0,
-                        left: mdUp ? 200 : 0,
-                        height: 'calc(100% - 50px)',
-                        width: mdUp? 'calc(100% - 200px)' : '100%',
-                    }}
-                >
-                    {/* <Tabs value={currentTab}
+  return (
+    <Stack sx={{ height: "100%" }}>
+      <TopHeader openNav={() => setOpenDrawer(true)} />
+
+      <Stack direction={"row"} flex={1}>
+        <SideMenu
+          query={query}
+          chatList={chatList}
+          openDrawer={openDrawer}
+          setOpenDrawer={setOpenDrawer}
+        />
+        <TabContext value={currentTab}>
+          <Stack
+            gap={2}
+            sx={{
+              background: "#FFFFFF",
+              padding: "16px",
+              position: "relative",
+              top: 0,
+              left: mdUp ? 200 : 0,
+              height: "calc(100% - 50px)",
+              width: mdUp ? "calc(100% - 200px)" : "100%",
+            }}
+          >
+            {/* <Tabs value={currentTab}
                         variant="scrollable"
                         visibleScrollbar
                         allowScrollButtonsMobile
@@ -213,21 +210,20 @@ export default function Page() {
                             ))
                         }
                     </Tabs> */}
-                    {
-                        tabList?.map(tab => {
-                            return (
-                                <TabPanel value={tab.value}
-                                    key={"printout-template-tab-panel-" + tab.value}
-                                    sx={{ padding: '12px', }}
-                                >
-                                    <tab.content {...tabProps}/>
-                                </TabPanel>
-                            )
-                        })
-                    }
-                </Stack>
-            </TabContext>
-            </Stack>
-        </Stack>
-    )
+            {tabList?.map((tab) => {
+              return (
+                <TabPanel
+                  value={tab.value}
+                  key={"printout-template-tab-panel-" + tab.value}
+                  sx={{ padding: "12px" }}
+                >
+                  <tab.content {...tabProps} />
+                </TabPanel>
+              );
+            })}
+          </Stack>
+        </TabContext>
+      </Stack>
+    </Stack>
+  );
 }
